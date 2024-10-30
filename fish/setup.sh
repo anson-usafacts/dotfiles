@@ -5,8 +5,8 @@ cd "$DIR"
 
 . ../scripts/functions.sh
 
-SOURCE="$(realpath .)"
-DESTINATION="$(realpath ~/.config/fish)"
+SOURCE=$(realpath .)
+DESTINATION=$(realpath ~/.config/fish)
 
 info "Setting up fish shell..."
 

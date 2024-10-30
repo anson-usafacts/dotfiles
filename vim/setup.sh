@@ -5,8 +5,8 @@ cd "$DIR"
 
 . ../scripts/functions.sh
 
-SOURCE="$(realpath .)"
-DESTINATION="$(realpath ~)"
+SOURCE=$(realpath .)
+DESTINATION=$(realpath ~)
 
 info "Setting up Vim..."
 

@@ -5,8 +5,8 @@ cd "$DIR"
 
 . ../scripts/functions.sh
 
-SOURCE="$(realpath .)"
-DESTINATION="$(realpath ~/Library/Application\ Support/Code/User)"
+SOURCE=$(realpath .)
+DESTINATION=$(realpath ~/Library/Application\ Support/Code/User)
 
 info "Setting up Visual Studio Code..."
 
