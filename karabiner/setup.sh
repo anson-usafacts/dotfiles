@@ -5,12 +5,13 @@ cd "$DIR"
 
 . ../scripts/functions.sh
 
-SOURCE=$(realpath -q .)
-DESTINATION=$(realpath -q ~/.config/karabiner)
+SOURCE=$(realpath .)
+DESTINATION=$(realpath ~/.config/karabiner)
 
 info "Setting up Karabiner Elements..."
 
 substep_info "Creating Karabiner Elements folder..."
+echo $DESTINATION
 mkdir -p $DESTINATION
 
 find * -name "*.json" | while read fn; do
