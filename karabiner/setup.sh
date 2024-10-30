@@ -5,8 +5,8 @@ cd "$DIR"
 
 . ../scripts/functions.sh
 
-SOURCE=$(realpath .)
-DESTINATION=$(realpath ~/.config/karabiner)
+SOURCE=$(realpath -q .)
+DESTINATION=$(realpath -q ~/.config/karabiner)
 
 info "Setting up Karabiner Elements..."
 
@@ -14,7 +14,7 @@ substep_info "Creating Karabiner Elements folder..."
 mkdir -p $DESTINATION
 
 find * -name "*.json" | while read fn; do
-    symlink $SOURCE/$fn $DESTINATION/$fn
+    symlink "$SOURCE/$fn" "$DESTINATION/$fn"
 done
 clear_broken_symlinks "$DESTINATION"
 
