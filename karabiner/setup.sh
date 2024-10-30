@@ -11,7 +11,7 @@ DESTINATION=$(realpath ~/.config/karabiner)
 info "Setting up Karabiner Elements..."
 
 substep_info "Creating Karabiner Elements folder..."
-echo $DESTINATION
+
 mkdir -p $DESTINATION
 
 find * -name "*.json" | while read fn; do
