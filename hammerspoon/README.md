@@ -19,9 +19,3 @@
 * Hyper + ⌘ + → --> Next Monitor
 * Hyper + ⌘ + ← --> Previous Monitor
 
-## VPN
-* Hyper + E --> Toggle Viscosity VPN connection
-
-## Bluetooth
-* Hyper + B --> Toggle bluetooth
-* Hyper + ⌘ + B --> Toggle bluetooth headphone connection

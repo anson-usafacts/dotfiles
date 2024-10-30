@@ -1,0 +1,10 @@
+git@github.com:USAFacts/usafacts-data-platform-pyrite-notebooks.git
+git@github.com:USAFacts/usafacts-data-platform-notebooks.git
+git@github.com:USAFacts/data-data-platform-airflow.git
+git@github.com:USAFacts/data-quality-library.git
+git@github.com:USAFacts/data-fetch.git
+git@github.com:USAFacts/usafacts-data-platform-databricks-tools.git
+git@github.com:USAFacts/data-common-library.git
+git@github.com:USAFacts/data-validation-notebooks.git
+git@github.com:USAFacts/data-quality-notebooks.git
+git@github.com:USAFacts/data-dataset-mapping.git

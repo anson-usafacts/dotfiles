@@ -48,10 +48,6 @@ This folder is a collection of my own repos, some of which are even private. The
 * sethidden - A shell script which takes command line arguments to show or hide hidden files
 * togglehidden - A shell script that toggles between showing and hiding hidden files
 
-### Duti (duti/)
-* setup.sh - Sets the defaults set up in the different files
-* app.package.id - Contains all extensions for the specified program
-
 ### Fish (fish/)
 * setup.sh - Symlinks all fish files to their corresponding location in `~/.config/fish/`
 * config.fish - Global fish configuration (.fishrc)
@@ -69,7 +65,6 @@ This folder is a collection of my own repos, some of which are even private. The
   * forrepos.fish - Executes a passed command for all repos in `~/repos`
   * ls.fish - Calling ls with parameter --color=auto
   * manp.fish - Open a man page in Preview
-  * mvnpurge.fish - Purge local mvn repository
   * pubkey.fish - Copies the SSH public key to the clipboard
   * repo.fish - Finds a repository in `~/repos` and jumps to it
   * repodir.fish - Finds a repository in `~/repos` and prints its path
@@ -85,9 +80,7 @@ This folder is a collection of my own repos, some of which are even private. The
 ### Hammerspoon (hammerspoon/)
 * setup.sh - Symlinks all lua and AppleScript files to `~/.hammerspoon/`
 * init.lua - Contains the main Hammerspoon config, importing the others
-* bluetooth.lua - Toggles Bluetooth headset connection
 * caffeinate.lua - Shortcuts for managing screen state (locking, etc.)
-* connect_headphones.applescript - Toggles Bluetooth headset connection
 * hyper.lua - Binds the "F18" key to a Hyper mode, which can be used for global commands
 * minimising.lua - Shortcuts for minimising and unminimising windows
 * shortcuts.lua - Hyper key bindings to existing shortcuts
