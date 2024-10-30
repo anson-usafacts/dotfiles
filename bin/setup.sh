@@ -5,8 +5,8 @@ cd "$DIR"
 
 . ../scripts/functions.sh
 
-SOURCE="$(realpath -m .)"
-DESTINATION="$(realpath -m ~/bin)"
+SOURCE="$(realpath .)"
+DESTINATION="$(realpath ~/bin)"
 
 info "Setting up user bin..."
 
