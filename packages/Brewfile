@@ -2,6 +2,7 @@ tap 'homebrew/cask'
 tap 'databricks/tap'
 
 cask 'docker'
+cask 'fellow'
 cask 'google-chrome'
 cask 'hammerspoon'
 cask 'iterm2'

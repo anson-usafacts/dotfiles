@@ -26,3 +26,4 @@ set -x -g PATH ~/.composer/vendor/bin $PATH
 
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
 
+setup
