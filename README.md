@@ -19,6 +19,8 @@ For more information about dotfiles, I wrote these articles on my blog:
   ```
 4. Run the `bootstrap.sh` script
     1. Alternatively, only run the `setup.sh` scripts in specific subfolders if you don't need everything
+    2. TODO: the scripts are lowkey broken, specfically when running `$(realpath ~/some-file-that-does-not-exist)`. 
+      1. To fix, replace with `/Users/{YOUR_USER}/{DESITINATION_FILE}` in `setup.sh` files
 5. (Optional) Point your Alfred preference sync to a backed up folder
 6. Login to applications, enter license keys, set preferences
 

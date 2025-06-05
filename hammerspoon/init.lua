@@ -1,6 +1,6 @@
 require "hyper"
 require "caffeinate"
-require "spectacle"
+require "window_management"
 require "shortcuts"
 
 -----------------------------------------------

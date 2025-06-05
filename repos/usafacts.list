@@ -8,3 +8,5 @@ git@github.com:USAFacts/data-common-library.git
 git@github.com:USAFacts/data-validation-notebooks.git
 git@github.com:USAFacts/data-quality-notebooks.git
 git@github.com:USAFacts/data-dataset-mapping.git
+git@github.com:USAFacts/platform-services.git
+git@github.com:USAFacts/pyrite-smithy.git
