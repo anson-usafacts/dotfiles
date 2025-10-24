@@ -43,96 +43,126 @@ cd "$SCRIPT_DIR"
 
 info "Starting git, fish, and CLI tools installation for devpod..."
 
-# Install git, fish, and CLI tools
-info "Installing git, fish, and CLI tools..."
+# Check and install Homebrew if not present
+info "Checking for Homebrew..."
 
-if command -v apt-get >/dev/null 2>&1; then
-    # Ubuntu/Debian
-    substep_info "Detected Debian/Ubuntu package manager"
-    sudo apt-get update -qq
+if ! command -v brew >/dev/null 2>&1; then
+    substep_info "Homebrew not found, installing..."
     
-    # Install basic tools first
-    substep_info "Installing basic tools..."
-    sudo apt-get install -y -qq git fish curl wget make tree build-essential || error "Failed to install basic tools"
-    
-    # Install additional tools that are available via apt
-    substep_info "Installing additional CLI tools..."
-    sudo apt-get install -y -qq postgresql-client 2>/dev/null || substep_info "PostgreSQL client not available"
-    
-    # Install GitHub CLI
-    if ! command -v gh >/dev/null 2>&1; then
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+    # Install prerequisites for Homebrew on Linux
+    if command -v apt-get >/dev/null 2>&1; then
+        substep_info "Installing Homebrew prerequisites (Debian/Ubuntu)..."
         sudo apt-get update -qq
-        sudo apt-get install -y -qq gh || substep_info "GitHub CLI installation failed"
+        sudo apt-get install -y -qq build-essential procps curl file git 2>/dev/null || substep_error "Failed to install prerequisites"
     fi
     
-    # Install kubectl
-    if ! command -v kubectl >/dev/null 2>&1; then
-        curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 2>/dev/null || true
-        echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
-        sudo apt-get update -qq
-        sudo apt-get install -y -qq kubectl 2>/dev/null || substep_info "kubectl installation failed"
+    # Install Homebrew
+    substep_info "Installing Homebrew (this may take a few minutes)..."
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error "Failed to install Homebrew"
+        exit 1
+    }
+    
+    # Add Homebrew to PATH for current session
+    if [ -d "/home/linuxbrew/.linuxbrew" ]; then
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        substep_success "Homebrew installed at /home/linuxbrew/.linuxbrew"
+    elif [ -d "$HOME/.linuxbrew" ]; then
+        eval "$($HOME/.linuxbrew/bin/brew shellenv)"
+        substep_success "Homebrew installed at $HOME/.linuxbrew"
+    elif [ -d "/opt/homebrew" ]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+        substep_success "Homebrew installed at /opt/homebrew"
+    elif [ -d "/usr/local/Homebrew" ]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+        substep_success "Homebrew installed at /usr/local"
     fi
     
-    # Install helm
-    if ! command -v helm >/dev/null 2>&1; then
-        curl -fsSL https://baltocdn.com/helm/signing.asc | sudo apt-key add - 2>/dev/null || true
-        echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list > /dev/null
-        sudo apt-get update -qq
-        sudo apt-get install -y -qq helm 2>/dev/null || substep_info "helm installation failed"
+    # Add Homebrew to shell configuration
+    if [ -d "/home/linuxbrew/.linuxbrew" ] || [ -d "$HOME/.linuxbrew" ]; then
+        BREW_SHELLENV='eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
+        if [ -f ~/.bashrc ] && ! grep -q "linuxbrew" ~/.bashrc; then
+            echo "" >> ~/.bashrc
+            echo "# Homebrew" >> ~/.bashrc
+            echo "$BREW_SHELLENV" >> ~/.bashrc
+            substep_success "Added Homebrew to ~/.bashrc"
+        fi
+        if [ -f ~/.profile ] && ! grep -q "linuxbrew" ~/.profile; then
+            echo "" >> ~/.profile
+            echo "# Homebrew" >> ~/.profile
+            echo "$BREW_SHELLENV" >> ~/.profile
+            substep_success "Added Homebrew to ~/.profile"
+        fi
     fi
     
-    # Install bat (sometimes called batcat)
-    sudo apt-get install -y -qq bat 2>/dev/null || substep_info "bat not available"
-    
-    # Install Node.js
-    if ! command -v node >/dev/null 2>&1; then
-        substep_info "Installing Node.js..."
-        curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - 2>/dev/null
-        sudo apt-get install -y -qq nodejs || substep_info "Node.js installation failed"
-    fi
-    
-    # Install Python tools
-    substep_info "Installing Python tools..."
-    sudo apt-get install -y -qq python3-pip python3-venv 2>/dev/null || substep_info "Python tools already installed"
-    
-    # Install Azure CLI
-    if ! command -v az >/dev/null 2>&1; then
-        substep_info "Installing Azure CLI..."
-        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash 2>/dev/null || substep_info "Azure CLI installation failed"
-    fi
-    
-    # Install Poetry
-    if ! command -v poetry >/dev/null 2>&1; then
-        substep_info "Installing Poetry..."
-        curl -sSL https://install.python-poetry.org | python3 - 2>/dev/null || substep_info "Poetry installation failed"
-    fi
-    
-    # Install uv
-    if ! command -v uv >/dev/null 2>&1; then
-        substep_info "Installing uv..."
-        curl -LsSf https://astral.sh/uv/install.sh | sh 2>/dev/null || substep_info "uv installation failed"
-    fi
-    
-    # Install pyenv
-    if [ ! -d "$HOME/.pyenv" ]; then
-        substep_info "Installing pyenv..."
-        curl -fsSL https://pyenv.run | bash 2>/dev/null || substep_info "pyenv installation failed"
-    fi
-
-elif command -v brew >/dev/null 2>&1; then
-    # macOS - install all CLI tools from Brewfile
-    substep_info "Detected Homebrew package manager"
-    brew install git fish act astro azure-cli bat databricks gh glow helm kind kubectl make nvm poetry postgresql pyenv pyenv-virtualenv tree uv wget 2>/dev/null || substep_info "Some brew packages failed to install"
-
+    success "Homebrew installed successfully"
 else
-    error "No supported package manager found (apt-get or brew)"
-    error "Please install git and fish manually, then re-run this script"
+    substep_success "Homebrew is already installed"
+fi
+
+# Verify brew is accessible
+if ! command -v brew >/dev/null 2>&1; then
+    error "Homebrew installation failed or is not in PATH"
     exit 1
 fi
 
-success "Git, fish, and CLI tools installed successfully."
+# Update Homebrew
+info "Updating Homebrew..."
+brew update || substep_info "Homebrew update had some issues (continuing anyway)"
+
+# Install CLI tools from Brewfile using Homebrew
+info "Installing CLI tools via Homebrew..."
+substep_info "This may take several minutes on first install..."
+
+# Install tools one by one for better error handling
+TOOLS=(
+    "git"
+    "fish" 
+    "wget"
+    "make"
+    "tree"
+    "bat"
+    "gh"
+    "kubectl"
+    "helm"
+    "azure-cli"
+    "poetry"
+    "pyenv"
+    "pyenv-virtualenv"
+    "nvm"
+    "uv"
+    "postgresql@14"
+    "act"
+    "astro"
+    "glow"
+    "kind"
+    "databricks"
+)
+
+INSTALLED_COUNT=0
+FAILED_TOOLS=()
+
+for tool in "${TOOLS[@]}"; do
+    if brew list "$tool" &>/dev/null; then
+        substep_success "$tool already installed"
+        INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+    else
+        substep_info "Installing $tool..."
+        if brew install "$tool" 2>/dev/null; then
+            substep_success "$tool installed"
+            INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+        else
+            substep_error "$tool installation failed"
+            FAILED_TOOLS+=("$tool")
+        fi
+    fi
+done
+
+if [ ${#FAILED_TOOLS[@]} -gt 0 ]; then
+    substep_info "Failed to install: ${FAILED_TOOLS[*]}"
+fi
+
+success "Homebrew installation completed ($INSTALLED_COUNT/${#TOOLS[@]} tools installed)"
 
 # Setup git configuration
 info "Setting up git configuration..."
@@ -191,19 +221,22 @@ if [ -f "fish/fishfile" ]; then
     substep_success "Copied fishfile"
 fi
 
+# Add Homebrew to fish config if on Linux
+if [ -d "/home/linuxbrew/.linuxbrew" ] || [ -d "$HOME/.linuxbrew" ]; then
+    if [ -f ~/.config/fish/config.fish ] && ! grep -q "linuxbrew" ~/.config/fish/config.fish; then
+        {
+            echo ''
+            echo '# Homebrew'
+            echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
+        } >> ~/.config/fish/config.fish
+        substep_success "Added Homebrew to fish config"
+    fi
+fi
+
 success "Fish configuration completed."
 
 # Setup additional CLI tools
 info "Setting up additional CLI tools..."
-
-# Setup NVM (Node Version Manager)
-if ! command -v nvm >/dev/null 2>&1 && [ ! -d "$HOME/.nvm" ]; then
-    substep_info "Installing NVM..."
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash 2>/dev/null
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    substep_success "Installed NVM"
-fi
 
 # Setup pyenv - add to shell configuration if not already present
 if command -v pyenv >/dev/null 2>&1; then
@@ -224,29 +257,15 @@ if command -v pyenv >/dev/null 2>&1; then
             echo '# Pyenv configuration'
             echo 'set -x PYENV_ROOT "$HOME/.pyenv"'
             echo 'set -x PATH "$PYENV_ROOT/bin" $PATH'
-            echo 'pyenv init - | source'
+            echo 'status is-interactive; and pyenv init - | source'
         } >> ~/.config/fish/config.fish
         substep_success "Configured pyenv in fish config"
     fi
 fi
 
-# Setup Poetry - add to PATH if needed
-if command -v poetry >/dev/null 2>&1 || [ -f "$HOME/.local/bin/poetry" ]; then
-    if [ -f ~/.bashrc ] && ! grep -q '.local/bin' ~/.bashrc; then
-        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-        substep_success "Added ~/.local/bin to PATH in ~/.bashrc"
-    fi
-fi
-
-# Setup uv - add to PATH if needed
-if [ -f "$HOME/.cargo/bin/uv" ]; then
-    if [ -f ~/.bashrc ] && ! grep -q '.cargo/bin' ~/.bashrc; then
-        echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
-        substep_success "Added ~/.cargo/bin to PATH in ~/.bashrc"
-    fi
-fi
-
 # Verify installed tools
+info "Verifying installed tools..."
+
 TOOLS_FOUND=0
 TOOLS_TOTAL=0
 
@@ -257,29 +276,38 @@ check_tool() {
         substep_success "$1 is available"
         return 0
     else
+        substep_info "$1 not found in PATH"
         return 1
     fi
 }
 
 check_tool "git"
 check_tool "fish"
-check_tool "bat" || check_tool "batcat"
+check_tool "bat"
 check_tool "gh"
 check_tool "kubectl"
 check_tool "helm"
 check_tool "az"
-check_tool "poetry" || [ -f "$HOME/.local/bin/poetry" ]
-check_tool "pyenv" || [ -d "$HOME/.pyenv" ]
-check_tool "uv" || [ -f "$HOME/.cargo/bin/uv" ]
+check_tool "poetry"
+check_tool "pyenv"
+check_tool "uv"
+check_tool "tree"
+check_tool "wget"
 
-success "Additional CLI tools setup completed ($TOOLS_FOUND/$TOOLS_TOTAL tools available)."
+success "Tool verification completed ($TOOLS_FOUND/$TOOLS_TOTAL tools available in PATH)."
 
 # Final message
 echo ""
 success "Installation completed successfully!"
-info "You can now use 'fish' to start the fish shell"
-info "Git is configured with your settings"
-info "Available tools: git, fish, bat, gh, kubectl, helm, az, poetry, pyenv, nvm, uv, and more"
-info ""
-info "To use fish as your shell, run: exec fish"
-info "To reload shell configuration, run: source ~/.bashrc (or restart your terminal)"
+echo ""
+info "✓ Homebrew is installed and configured"
+info "✓ Git is configured with your settings"
+info "✓ Fish shell is configured with your functions and completions"
+info "✓ CLI tools installed: git, fish, bat, gh, kubectl, helm, az, poetry, pyenv, uv, and more"
+echo ""
+info "Next steps:"
+info "  • Run 'exec fish' to start using fish shell"
+info "  • Run 'source ~/.bashrc' to reload bash configuration (or restart terminal)"
+info "  • Homebrew is available via 'brew' command"
+info "  • Use 'pyenv install <version>' to install Python versions"
+echo ""
