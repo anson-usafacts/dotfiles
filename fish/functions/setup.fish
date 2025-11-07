@@ -15,11 +15,10 @@ function setup
     abbr gco git checkout
     abbr ll ls -lhA
     abbr bs brew services
-    abbr dev="kubectl --context=usafacts-01-dev"
-    abbr qa="kubectl --context=usafacts-01-qa"
-    abbr prod="kubectl --context=usafacts-01-prod"
-    abbr tools="kubectl --context=usafacts-01-tools"
-    abbr data="kubectl --context=usafacts-01-data"
-    abbr 
+    abbr dev "kubectl --context=usafacts-01-dev"
+    abbr qa "kubectl --context=usafacts-01-qa"
+    abbr prod "kubectl --context=usafacts-01-prod"
+    abbr tools "kubectl --context=usafacts-01-tools"
+    abbr data "kubectl --context=usafacts-01-data"
     fisher
 end
