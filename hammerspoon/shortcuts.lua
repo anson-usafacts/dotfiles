@@ -4,6 +4,12 @@ hyper:bind({}, "t", function()
     hyper.triggered = true
 end)
 
+-- Function to open Obsidian notes
+hyper:bind({}, "n", function()
+    hs.application.launchOrFocus("Obsidian")
+    hyper.triggered = true
+end)
+
 -- Function to open Outlook
 hyper:bind({}, "o", function()
     hs.application.launchOrFocus("Microsoft Outlook") 
